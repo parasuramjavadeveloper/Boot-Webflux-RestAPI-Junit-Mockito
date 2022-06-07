@@ -1,5 +1,6 @@
 package com.example.reactivewebflux.demo.controller;
 
+import com.example.reactivewebflux.demo.exception.CustomerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,9 +22,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/customer")
 public class CustomerController {
 	
-	@Autowired
-	CustomerRepository customerRepository;
-	
+
 	@Autowired
 	CustomerService customerService;
 	
@@ -38,23 +37,29 @@ public class CustomerController {
 	}
 	
 	@GetMapping("/getCustomerDetails/{id}")
-	public Mono<Customer> getCustomerDetails(@PathVariable Integer customerId){
-		return customerService.findById(customerId);
+	public Mono<Customer> getCustomerDetails(@PathVariable Integer id){
+		return customerService.findById(id);
 	}
-	
+
+	@GetMapping("/getCustomerDetailsByName/{name}")
+	public Mono<Customer> getCustomerDetailsByName(@PathVariable String name){
+		return customerService.findByName(name);
+	}
+
 	@PostMapping
 	public Mono<Customer> saveCustomer(@RequestBody Customer customer) {
+		System.out.println("Test save");
 		return customerService.save(customer);
 	}
 	
 	@PutMapping("/updateCustomer/{id}")
-	public Mono<Customer> updateCustomer(@RequestBody Customer customer,@PathVariable Integer customerId) {
-		return customerService.update(customer,customerId);
+	public Mono<Customer> updateCustomer(@RequestBody Customer customer,@PathVariable Integer id) {
+		return customerService.update(customer,id);
 	}
 	
 	@DeleteMapping("/deleteCustomer/{id}")
-	public Mono<Void> deleteCustomer(@PathVariable Integer customerId) {
-		return customerService.deleteById(customerId);
+	public Mono<Void> deleteCustomer(@PathVariable Integer id) {
+		return customerService.deleteById(id);
 
 	}
 	

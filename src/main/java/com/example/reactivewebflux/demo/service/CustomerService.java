@@ -2,6 +2,7 @@ package com.example.reactivewebflux.demo.service;
 
 import java.time.Duration;
 
+import com.example.reactivewebflux.demo.exception.CustomerNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,14 @@ public class CustomerService {
 
 	public Mono<Customer> findById(Integer customerId) {
 		return customerRepository.findById(customerId);
+	}
+
+	public Mono<Customer> findByName(String customerName) throws CustomerNotFoundException {
+		if("XYZ".equals(customerName)) {
+			throw new CustomerNotFoundException("Customer not exists");
+		}
+		Customer customer = new Customer(3,customerName);
+		return Mono.just(customer);
 	}
 
 	public Mono<Customer> save(Customer customer) {

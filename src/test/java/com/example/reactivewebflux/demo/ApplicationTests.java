@@ -29,13 +29,13 @@ class ApplicationTests {
 		Customer customerObject = new Customer(1,"Abhinay");
 		Mono<Customer> customerMonoObject = Mono.just(new Customer(1,"Abhinay"));
 		when(customerService.save(customerObject)).thenReturn(customerMonoObject);
-		webTestClient.post().uri("/customer").body(customerObject,Customer.class).exchange()
+		webTestClient.post().uri("/customer").body(customerMonoObject,Customer.class).exchange()
 		.expectStatus().isOk();
 	}
 
 	public void getCustomersTest() {
 		
-		Flux<Customer> customerMonoObject = Flux.just(new Customer(1,"Abhinay"),new Customer(2,"Ram"),new Customer(2,"Veera"));
+		Flux<Customer> customerMonoObject = Flux.just(new Customer(1,"Abhinay"),new Customer(2,"Ram"),new Customer(3,"Veera"));
 		when(customerService.getAllCustomer()).thenReturn(customerMonoObject);
 		webTestClient.get().uri("/customer").exchange()
 		.expectStatus().isOk().returnResult(Customer.class).getResponseBody();

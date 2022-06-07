@@ -29,32 +29,42 @@ class CustomerControllerTest {
 		Customer customerObject = new Customer(1,"Veera");
 		Mono<Customer> customerMonoObject = Mono.just(new Customer(1,"Veera"));
 		when(customerService.save(customerObject)).thenReturn(customerMonoObject);
-		webTestClient.post().uri("/customer").body(customerObject,Customer.class).exchange()
+		webTestClient.post().uri("/customer").body(customerMonoObject,Customer.class).exchange()
 		.expectStatus().isOk();
 	}
 
 	@Test
 	public void getCustomersTest() {
-		Flux<Customer> customerMonoObject = Flux.just(new Customer(1,"Veera"),new Customer(2,"Ram"),new Customer(2,"Bhavi"));
+		Flux<Customer> customerMonoObject = Flux.just(new Customer(1,"Veera"),new Customer(3,"Ram"),new Customer(2,"Bhavi"));
 		when(customerService.getAllCustomer()).thenReturn(customerMonoObject);
 		webTestClient.get().uri("/customer").exchange()
 		.expectStatus().isOk().returnResult(Customer.class).getResponseBody();
 	}
 
 	@Test
+	public void getCustomerByIdTest() {
+		Mono<Customer> customerMonoObject = Mono.just(new Customer(1,"Veera"));
+		when(customerService.findById(1)).thenReturn(customerMonoObject);
+		webTestClient.get().uri("/customer/findById/{id}",1).exchange()
+				.expectStatus().isNotFound().returnResult(Customer.class).getResponseBody();
+	}
+
+	@Test
 	public void updateCustomerTest() {
 		Customer customerObject = new Customer(2,"Bhavi");
-		Mono<Customer> customerMonoObject = Mono.just(new Customer(2,"Chinni"));
-		when(customerService.update(customerObject,customerObject.getId())).thenReturn(customerMonoObject);
-		webTestClient.put().uri("/customer").body(customerObject,Customer.class).exchange()
+		Mono<Customer> customerMonoInObject = Mono.just(new Customer(2,"Bhavi"));
+		Mono<Customer> customerMonoOutObject = Mono.just(new Customer(2,"Chinni"));
+		when(customerService.update(customerObject,customerObject.getId())).thenReturn(customerMonoOutObject);
+		webTestClient.post().uri("/customer").body(customerMonoInObject,Customer.class).exchange()
 				.expectStatus().isOk();
 	}
 
 	@Test
 	public void deleteCustomerTest() {
 		Customer customerObject = new Customer(2,"Bhavi");
+		Mono<Customer> customerMonoInObject = Mono.just(new Customer(2,"Bhavi"));
 		when(customerService.deleteById(customerObject.getId())).thenReturn(Mono.empty());
-		webTestClient.delete().uri("/customer").exchange()
+		webTestClient.delete().uri("/customer/deleteCustomer/{id}",2).exchange()
 				.expectStatus().isOk();
 	}
 }
